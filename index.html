@@ -124,6 +124,7 @@
 <script>
 const DAYS = ["일","월","화","수","목","금","토"];
 let b64 = null;
+let mediaType = "image/jpeg";
 
 // 저장된 키 불러오기
 window.onload = () => {
@@ -186,6 +187,7 @@ function handleFile(file) {
   const reader = new FileReader();
   reader.onload = e => {
     const src = e.target.result;
+    mediaType = file.type || "image/jpeg";
     b64 = src.split(",")[1];
     const preview = document.getElementById("preview");
     preview.src = src;
@@ -244,12 +246,12 @@ Do-1U/1D → D-1, Do-2U/2D → D-2, Do-3U/3D → D-3, Do-4U/4D → D-4
         "anthropic-dangerous-direct-browser-access": "true"
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "claude-sonnet-4-20250514",
         max_tokens: 1000,
         messages: [{
           role: "user",
           content: [
-            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
+            { type: "image", source: { type: "base64", media_type: mediaType, data: b64 } },
             { type: "text", text: prompt }
           ]
         }]
