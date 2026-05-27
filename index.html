@@ -215,7 +215,7 @@ Do-1U/1D → D-1, Do-2U/2D → D-2, Do-3U/3D → D-3, Do-4U/4D → D-4
         "anthropic-dangerous-direct-browser-access": "true"
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-5",
+        model: "claude-sonnet-4-20250514",
         max_tokens: 1000,
         messages: [{
           role: "user",
@@ -235,16 +235,28 @@ Do-1U/1D → D-1, Do-2U/2D → D-2, Do-3U/3D → D-3, Do-4U/4D → D-4
     const parsed = JSON.parse(clean);
 
     const base = new Date(parsed.baseDate);
-    let msg = "";
+    let msg = "- 현관 비밀번호 : 0926*\n- 룸 비밀번호 : 092625*\n";
 
     parsed.checkouts.forEach(({date, rooms}) => {
       const [m, d] = date.split("-").map(Number);
       const dt = new Date(base.getFullYear(), m - 1, d);
       const day = DAYS[dt.getDay()];
+      msg += "\n\n";
       if (!rooms || rooms.length === 0) {
-        msg += `✔️${m}/${d}(${day})  휴무  `;
+        msg += `✔️${m}/${d}(${day})  휴무`;
       } else {
-        msg += `✔️${m}/${d}(${day}) ${rooms.length}개 ${rooms.join(" ")}  `;
+        // 같은 prefix(J/Y/D)끼리 묶기
+        const grouped = {};
+        rooms.forEach(r => {
+          const match = r.match(/^([A-Z]+)-(\d+)$/);
+          if (match) {
+            const [, prefix, num] = match;
+            if (!grouped[prefix]) grouped[prefix] = [];
+            grouped[prefix].push(num);
+          }
+        });
+        const lines = Object.entries(grouped).map(([p, nums]) => `${p}-${nums.join(",")}`);
+        msg += `✔️${m}/${d}(${day}) ${rooms.length}개\n${lines.join("\n")}`;
       }
     });
 
