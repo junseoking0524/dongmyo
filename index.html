@@ -12,13 +12,6 @@
   .header { display: flex; align-items: center; gap: 10px; }
   .header h1 { font-size: 17px; font-weight: 700; color: #1a1a2e; }
   .header p { font-size: 12px; color: #999; margin-top: 3px; }
-  .key-row { display: flex; gap: 8px; align-items: center; }
-  .key-input { flex: 1; padding: 10px 12px; border: 1.5px solid #d0d5e8; border-radius: 10px; font-size: 13px; color: #333; outline: none; }
-  .key-input:focus { border-color: #4f7cff; }
-  .key-input.saved { border-color: #27ae60; background: #f0fff4; }
-  .btn-save { padding: 10px 16px; border-radius: 10px; border: none; background: #4f7cff; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-  .btn-save.saved { background: #27ae60; }
-  .key-status { font-size: 12px; margin-top: 6px; color: #27ae60; display: none; }
   .drop-zone { border: 2px dashed #d0d5e8; border-radius: 14px; padding: 30px 20px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
   .drop-zone.has-image { border-color: #4f7cff; border-style: solid; }
   .drop-zone:hover { border-color: #4f7cff; }
@@ -39,6 +32,13 @@
   .loading { text-align: center; padding: 10px; color: #4f7cff; font-size: 14px; }
   .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #e0e7ff; border-top-color: #4f7cff; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .key-row { display: flex; gap: 8px; align-items: center; }
+  .key-input { flex: 1; padding: 10px 12px; border: 1.5px solid #d0d5e8; border-radius: 10px; font-size: 13px; color: #333; outline: none; }
+  .key-input:focus { border-color: #4f7cff; }
+  .key-input.saved { border-color: #27ae60; background: #f0fff4; }
+  .btn-save { padding: 10px 16px; border-radius: 10px; border: none; background: #4f7cff; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn-save.saved { background: #27ae60; }
+  .key-status { font-size: 12px; margin-top: 6px; color: #27ae60; display: none; }
   .toggle-key { font-size: 11px; color: #aaa; cursor: pointer; text-decoration: underline; margin-top: 4px; display: inline-block; }
 </style>
 </head>
@@ -126,7 +126,6 @@ const DAYS = ["일","월","화","수","목","금","토"];
 let b64 = null;
 let mediaType = "image/jpeg";
 
-// 저장된 키 불러오기
 window.onload = () => {
   const saved = localStorage.getItem("anthropic_key");
   if (saved) {
@@ -136,9 +135,7 @@ window.onload = () => {
     document.getElementById("saveBtn").classList.add("saved");
     document.getElementById("keyStatus").style.display = "block";
     document.getElementById("keyDot").style.background = "#27ae60";
-    document.getElementById("keyArrow").textContent = "▼ 펼치기";
   } else {
-    // 키 없으면 자동으로 펼치기
     toggleKeyPanel();
   }
 };
@@ -158,7 +155,7 @@ function toggleKeyPanel() {
 function saveKey() {
   const key = document.getElementById("keyInput").value.trim();
   if (!key.startsWith("sk-ant-")) {
-    alert("올바른 API 키를 입력해주세요. (sk-ant-api03- 로 시작)");
+    alert("올바른 API 키를 입력해주세요. (sk-ant- 로 시작)");
     return;
   }
   localStorage.setItem("anthropic_key", key);
@@ -167,7 +164,6 @@ function saveKey() {
   document.getElementById("saveBtn").classList.add("saved");
   document.getElementById("keyStatus").style.display = "block";
   document.getElementById("keyDot").style.background = "#27ae60";
-  // 저장 후 자동 접기
   document.getElementById("keyPanel").style.display = "none";
   document.getElementById("keyArrow").textContent = "▼ 펼치기";
 }
@@ -276,7 +272,6 @@ Do-1U/1D → D-1, Do-2U/2D → D-2, Do-3U/3D → D-3, Do-4U/4D → D-4
       if (!rooms || rooms.length === 0) {
         msg += `✔️${m}/${d}(${day})  휴무`;
       } else {
-        // 같은 prefix(J/Y/D)끼리 묶기
         const grouped = {};
         rooms.forEach(r => {
           const match = r.match(/^([A-Z]+)-(\d+)$/);
@@ -295,7 +290,7 @@ Do-1U/1D → D-1, Do-2U/2D → D-2, Do-3U/3D → D-3, Do-4U/4D → D-4
     document.getElementById("resultCard").style.display = "block";
 
   } catch(e) {
-    document.getElementById("errorBox").textContent = "⚠️ 오류: " + e.message + "\n\n API 키를 확인하거나 더 선명한 이미지를 사용해주세요.";
+    document.getElementById("errorBox").textContent = "⚠️ 오류: " + e.message + "\n\nAPI 키를 확인하거나 더 선명한 이미지를 사용해주세요.";
     document.getElementById("errorBox").style.display = "block";
   }
 
